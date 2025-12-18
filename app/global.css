@@ -1,0 +1,119 @@
+:root {
+  --color-primary: #4f46e5;      /* indigo-600 */
+  --color-primary-dark: #4338ca; /* indigo-700 */
+  --color-text-gray: #6b7280;   /* gray-500 */
+  --color-background: #f9fafb;  /* gray-50 */
+  --color-card-bg: #ffffff;
+  --color-border-light: #e0e7ff; /* indigo-100 */
+  --spacing-md: 16px;
+  --spacing-lg: 32px;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+    background-color: var(--color-background);
+    padding: var(--spacing-lg) var(--spacing-md);
+}
+
+.page-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-lg);
+}
+
+.app-logo {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+  letter-spacing: -0.025em;
+  padding: var(--spacing-md) 0;
+}
+
+.app-tagline {
+  font-size: 18px;
+  color: var(--color-text-gray);
+}
+
+.search-form-card {
+  background-color: var(--color-card-bg);
+  display: flex;
+  flex-direction: column;
+  width: min(90%, 50rem);
+  margin: 2rem 0;
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border-light);
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.15),
+    -8px -8px 16px rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  transition: all 0.3s ease-in-out;
+}
+
+.search-form-title {
+  padding: 0 0 var(--spacing-md) var(--spacing-md);
+}
+
+.selection-group {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+}
+
+.selection-item {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 200px; 
+}
+
+.select-label {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.selection-item select {
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border-light);
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 16px;
+    height: 40px;
+}
+
+.search-button {
+  width: 100%; 
+  flex-grow: 1;
+  background-color: var(--color-primary);
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-sizing: border-box; 
+}
+
+.search-button:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.search-button:active {
+  transform: scale(0.99);
+}
