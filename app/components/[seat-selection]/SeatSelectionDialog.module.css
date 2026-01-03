@@ -1,0 +1,275 @@
+.dialogOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease-out;
+}
+
+.dialogContent {
+    background-color: var(--color-card-bg);
+    border-radius: 16px;
+    padding: 24px;
+    width: 90%;
+    max-width: 450px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dialogHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.dialogHeader h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-primary-dark);
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--color-text-gray);
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+}
+
+.closeButton:hover {
+    color: #ef4444;
+}
+
+.seatMapContainer {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #f3f4f6;
+    border-radius: 12px;
+    scrollbar-width: thin;
+}
+
+.driverArea {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px dashed #d1d5db;
+}
+
+.steeringWheel {
+    font-size: 24px;
+    color: var(--color-text-gray);
+    transform: rotate(45deg);
+}
+
+.seatsGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.seatRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.seatGroupLeft,
+.seatGroupRight {
+    display: flex;
+    gap: 8px;
+}
+
+.aisle {
+    width: 40px;
+    text-align: center;
+    font-size: 12px;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.seat {
+    width: 40px;
+    height: 48px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.seat i {
+    font-size: 18px;
+    color: #9ca3af;
+    margin-bottom: 2px;
+}
+
+.seatNumber {
+    font-size: 10px;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.seat:hover:not(.booked) {
+    border-color: var(--color-primary);
+    background-color: #eef2ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.seat.selected {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary-dark);
+    color: white;
+}
+
+.seat.selected i,
+.seat.selected .seatNumber {
+    color: white;
+}
+
+.seat.booked {
+    background-color: #e5e7eb;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.seatLegend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.legendItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--color-text-gray);
+}
+
+.seatSample {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1px solid #d1d5db;
+}
+
+.seatSample.available {
+    background-color: white;
+}
+
+.seatSample.selected {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.seatSample.booked {
+    background-color: #e5e7eb;
+    border-color: #e5e7eb;
+}
+
+.dialogFooter {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border-light);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.selectedInfo {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-primary-dark);
+}
+
+.dialogActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btnCancel {
+    background-color: transparent;
+    border: 1px solid var(--color-border-light);
+    color: var(--color-text-gray);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btnCancel:hover {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.btnConfirm {
+    background-color: var(--color-primary);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+}
+
+.btnConfirm:hover {
+    background-color: var(--color-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px -1px rgba(79, 70, 229, 0.3);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

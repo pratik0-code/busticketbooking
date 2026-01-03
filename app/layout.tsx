@@ -1,4 +1,5 @@
 import "./global.css";
+import { Providers } from "./providers";
 
 export default function RootLayout({
     children,
@@ -17,7 +18,9 @@ export default function RootLayout({
                     referrerPolicy="no-referrer"
                 />
             </head>
-            <body>{children}</body>
+            <body>
+                <Providers>{children}</Providers>
+            </body>
         </html>
     );
 }
