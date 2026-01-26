@@ -273,3 +273,100 @@
         transform: translateY(0);
     }
 }
+
+.paymentContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.paymentHeader {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.paymentHeader h4 {
+    color: var(--color-primary-dark);
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.paymentHeader p {
+    color: var(--color-text-gray);
+    font-size: 0.9rem;
+}
+
+.paymentGrid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 16px;
+}
+
+.paymentBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.paymentBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.khaltiBtn {
+    border-color: #5C2D91;
+    color: #5C2D91;
+}
+
+.khaltiBtn:hover {
+    background-color: #5C2D91;
+    color: white;
+}
+
+.esewaBtn {
+    border-color: #60BB46;
+    color: #60BB46;
+}
+
+.esewaBtn:hover {
+    background-color: #60BB46;
+    color: white;
+}
+
+.mobankingBtn {
+    border-color: #0081C9;
+    color: #0081C9;
+}
+
+.mobankingBtn:hover {
+    background-color: #0081C9;
+    color: white;
+}
+
+.backToSeatsBtn {
+    margin-top: 20px;
+    background: none;
+    border: none;
+    color: var(--color-text-gray);
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+}
+
+.backToSeatsBtn:hover {
+    color: var(--color-primary);
+}

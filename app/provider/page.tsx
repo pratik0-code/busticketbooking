@@ -17,6 +17,7 @@ export default function ProviderDashboard() {
         price: '',
         origin: 'Kathmandu',
         destination: 'Pokhara',
+        date: '',
         departureTime: '',
         arrivalTime: '',
         duration: '',
@@ -53,8 +54,48 @@ export default function ProviderDashboard() {
         }
     }, [status, session, router]);
 
+    const calculateArrivalTime = (departure: string, durationStr: string) => {
+        if (!departure || !durationStr) return '';
+
+        try {
+            const [depHours, depMinutes] = departure.split(':').map(Number);
+            let totalMinutes = depHours * 60 + depMinutes;
+
+            // Parse duration (e.g., "7h 30m", "8h", "45m")
+            const hoursMatch = durationStr.match(/(\d+)\s*h/i);
+            const minutesMatch = durationStr.match(/(\d+)\s*m/i);
+
+            let addedMinutes = 0;
+            if (hoursMatch) addedMinutes += parseInt(hoursMatch[1]) * 60;
+            if (minutesMatch) addedMinutes += parseInt(minutesMatch[1]);
+
+            if (addedMinutes === 0) return ''; // Could not parse duration
+
+            totalMinutes += addedMinutes;
+
+            // Normalize to 24h format (handling next day overflow conceptually, though input type=time loops)
+            const newHours = Math.floor(totalMinutes / 60) % 24;
+            const newMinutes = totalMinutes % 60;
+
+            return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+        } catch (e) {
+            return '';
+        }
+    };
+
     const handleChange = (e: any) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        const updatedFormData = { ...formData, [name]: value };
+
+        if (name === 'departureTime' || name === 'duration') {
+            const arrival = calculateArrivalTime(
+                name === 'departureTime' ? value : formData.departureTime,
+                name === 'duration' ? value : formData.duration
+            );
+            if (arrival) updatedFormData.arrivalTime = arrival;
+        }
+
+        setFormData(updatedFormData);
     };
 
     const handleSubmit = async (e: any) => {
@@ -77,7 +118,7 @@ export default function ProviderDashboard() {
                 setMessage('Bus added successfully!');
                 const data = await res.json();
                 setBuses([...buses, data.bus]); // Add to local list
-                setFormData({ ...formData, name: '', plateNumber: '', price: '', pickupPoints: '' });
+                setFormData({ ...formData, name: '', plateNumber: '', price: '', pickupPoints: '', date: '' });
             } else {
                 const data = await res.json();
                 setMessage(data.message || 'Failed to add bus');
@@ -158,6 +199,11 @@ export default function ProviderDashboard() {
                                 <option>Biratnagar</option>
                                 <option>Chitwan</option>
                             </select>
+                        </div>
+
+                        <div className={styles.inputGroup}>
+                            <label className={styles.label}>Date</label>
+                            <input type="date" name="date" value={formData.date} onChange={handleChange} required className={styles.input} />
                         </div>
 
                         <div className={styles.inputGroup}>

@@ -10,6 +10,7 @@ export default function HomePage() {
     const router = useRouter();
     const [origin, setOrigin] = useState('Kathmandu');
     const [destination, setDestination] = useState('Pokhara');
+    const [travelDate, setTravelDate] = useState('');
     const [buses, setBuses] = useState<Bus[]>([]);
     const [hasSearched, setHasSearched] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -25,7 +26,11 @@ export default function HomePage() {
         setBuses([]); // Clear previous results
 
         try {
-            const res = await fetch(`/api/buses?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`);
+            let query = `/api/buses?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`;
+            if (travelDate) {
+                query += `&date=${travelDate}`;
+            }
+            const res = await fetch(query);
             if (res.ok) {
                 const data = await res.json();
                 // Map the DB data to match the Bus interface if necessary
@@ -129,6 +134,20 @@ export default function HomePage() {
                                                 <option value="Mahendranagar">Mahendranagar</option>
                                                 <option value="Nepalgunj">Nepalgunj</option>
                                             </select>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.selectionItem}>
+                                        <label htmlFor="date-input" className={styles.selectLabel}>Journey Date</label>
+                                        <div className={styles.selectWrapper}>
+                                            <i className="fa-regular fa-calendar"></i>
+                                            <input
+                                                id="date-input"
+                                                type="date"
+                                                value={travelDate}
+                                                onChange={(e) => setTravelDate(e.target.value)}
+                                                style={{ border: 'none', outline: 'none', background: 'transparent', width: '100%', fontSize: '1rem', color: '#1f2937' }}
+                                            />
                                         </div>
                                     </div>
 

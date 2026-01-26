@@ -18,6 +18,10 @@ const BusSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    date: {
+        type: String, // Format: YYYY-MM-DD
+        required: true,
+    },
     type: {
         type: String, // e.g., "Sofa", "Deluxe"
         required: true,

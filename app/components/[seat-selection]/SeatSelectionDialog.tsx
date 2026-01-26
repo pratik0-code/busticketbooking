@@ -21,6 +21,7 @@ const SeatSelectionDialog: React.FC<SeatSelectionDialogProps> = ({ isOpen, onClo
     const [bookedSeats, setBookedSeats] = useState<string[]>([]);
     const [selectedPickup, setSelectedPickup] = useState('');
     const [isBooking, setIsBooking] = useState(false);
+    const [viewState, setViewState] = useState<'SEAT' | 'PAYMENT'>('SEAT');
 
     // Mock seat data: 10 rows, columns A, B (left) and C, D (right)
     const rows = 10;
@@ -48,6 +49,7 @@ const SeatSelectionDialog: React.FC<SeatSelectionDialogProps> = ({ isOpen, onClo
             } else {
                 setSelectedPickup('');
             }
+            setViewState('SEAT');
         }
     }, [isOpen, busDetails]);
 
@@ -61,7 +63,13 @@ const SeatSelectionDialog: React.FC<SeatSelectionDialogProps> = ({ isOpen, onClo
         }
     };
 
-    const handleConfirmBooking = async () => {
+    const handleProceedToPayment = () => {
+        if (selectedSeats.length > 0) {
+            setViewState('PAYMENT');
+        }
+    };
+
+    const handleConfirmBooking = async (paymentMethod: string) => {
         if (!session || !busDetails || selectedSeats.length === 0) return;
 
         // Validation for pickup point
@@ -80,14 +88,16 @@ const SeatSelectionDialog: React.FC<SeatSelectionDialogProps> = ({ isOpen, onClo
                     passengerDetails: {
                         name: session.user.name,
                         mobile: session.user.mobile || 'N/A'
-                    }
+                    },
+                    paymentMethod
                 }),
             });
 
             if (res.ok) {
-                alert('Booking Confirmed! Thank you for booking.');
+                alert(`Booking Confirmed via ${paymentMethod}! Thank you for booking.`);
                 onClose();
                 setSelectedSeats([]);
+                setViewState('SEAT');
                 router.refresh();
             } else {
                 const err = await res.json();
@@ -107,131 +117,170 @@ const SeatSelectionDialog: React.FC<SeatSelectionDialogProps> = ({ isOpen, onClo
         <div className={styles.dialogOverlay}>
             <div className={styles.dialogContent}>
                 <div className={styles.dialogHeader}>
-                    <h3>Select your seats</h3>
+                    <h3>{viewState === 'SEAT' ? 'Select your seats' : 'Select Payment Method'}</h3>
                     <button className={styles.closeButton} onClick={onClose}>
                         <i className="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
-                <div className={styles.seatMapContainer}>
-                    <div className={styles.driverArea}>
-                        <div className={styles.steeringWheel}>
-                            <i className="fa-solid fa-dharmachakra"></i>
-                        </div>
-                    </div>
-
-                    <div className={styles.seatsGrid}>
-                        {Array.from({ length: rows }).map((_, rowIndex) => (
-                            <div key={rowIndex} className={styles.seatRow}>
-                                <div className={styles.seatGroupLeft}>
-                                    {['A', 'B'].map((col) => {
-                                        const seatId = `${rowIndex + 1}${col}`;
-                                        const isSelected = selectedSeats.includes(seatId);
-                                        const isBooked = bookedSeats.includes(seatId);
-                                        return (
-                                            <button
-                                                key={seatId}
-                                                className={`${styles.seat} ${isSelected ? styles.selected : ''} ${isBooked ? styles.booked : ''}`}
-                                                onClick={() => handleSeatClick(seatId)}
-                                                disabled={isBooked}
-                                                title={`Seat ${seatId}${isBooked ? ' (Booked)' : ''}`}
-                                            >
-                                                <i className="fa-solid fa-couch"></i>
-                                                <span className={styles.seatNumber}>{seatId}</span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                                <div className={styles.aisle}></div>
-                                <div className={styles.seatGroupRight}>
-                                    {['C', 'D'].map((col) => {
-                                        const seatId = `${rowIndex + 1}${col}`;
-                                        const isSelected = selectedSeats.includes(seatId);
-                                        const isBooked = bookedSeats.includes(seatId);
-                                        return (
-                                            <button
-                                                key={seatId}
-                                                className={`${styles.seat} ${isSelected ? styles.selected : ''} ${isBooked ? styles.booked : ''}`}
-                                                onClick={() => handleSeatClick(seatId)}
-                                                disabled={isBooked}
-                                                title={`Seat ${seatId}${isBooked ? ' (Booked)' : ''}`}
-                                            >
-                                                <i className="fa-solid fa-couch"></i>
-                                                <span className={styles.seatNumber}>{seatId}</span>
-                                            </button>
-                                        );
-                                    })}
+                {viewState === 'SEAT' ? (
+                    <>
+                        <div className={styles.seatMapContainer}>
+                            <div className={styles.driverArea}>
+                                <div className={styles.steeringWheel}>
+                                    <i className="fa-solid fa-dharmachakra"></i>
                                 </div>
                             </div>
-                        ))}
-                    </div>
 
-                    <div className={styles.seatLegend}>
-                        <div className={styles.legendItem}>
-                            <span className={`${styles.seatSample} ${styles.available}`}></span>
-                            <span>Available</span>
-                        </div>
-                        <div className={styles.legendItem}>
-                            <span className={`${styles.seatSample} ${styles.selected}`}></span>
-                            <span>Selected</span>
-                        </div>
-                        <div className={styles.legendItem}>
-                            <span className={`${styles.seatSample} ${styles.booked}`}></span>
-                            <span>Booked</span>
-                        </div>
-                    </div>
-                </div>
+                            <div className={styles.seatsGrid}>
+                                {Array.from({ length: rows }).map((_, rowIndex) => (
+                                    <div key={rowIndex} className={styles.seatRow}>
+                                        <div className={styles.seatGroupLeft}>
+                                            {['A', 'B'].map((col) => {
+                                                const seatId = `${rowIndex + 1}${col}`;
+                                                const isSelected = selectedSeats.includes(seatId);
+                                                const isBooked = bookedSeats.includes(seatId);
+                                                return (
+                                                    <button
+                                                        key={seatId}
+                                                        className={`${styles.seat} ${isSelected ? styles.selected : ''} ${isBooked ? styles.booked : ''}`}
+                                                        onClick={() => handleSeatClick(seatId)}
+                                                        disabled={isBooked}
+                                                        title={`Seat ${seatId}${isBooked ? ' (Booked)' : ''}`}
+                                                    >
+                                                        <i className="fa-solid fa-couch"></i>
+                                                        <span className={styles.seatNumber}>{seatId}</span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        <div className={styles.aisle}></div>
+                                        <div className={styles.seatGroupRight}>
+                                            {['C', 'D'].map((col) => {
+                                                const seatId = `${rowIndex + 1}${col}`;
+                                                const isSelected = selectedSeats.includes(seatId);
+                                                const isBooked = bookedSeats.includes(seatId);
+                                                return (
+                                                    <button
+                                                        key={seatId}
+                                                        className={`${styles.seat} ${isSelected ? styles.selected : ''} ${isBooked ? styles.booked : ''}`}
+                                                        onClick={() => handleSeatClick(seatId)}
+                                                        disabled={isBooked}
+                                                        title={`Seat ${seatId}${isBooked ? ' (Booked)' : ''}`}
+                                                    >
+                                                        <i className="fa-solid fa-couch"></i>
+                                                        <span className={styles.seatNumber}>{seatId}</span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
 
-                <div className={styles.dialogFooter}>
-                    <div className={styles.selectedInfo}>
-                        {/* Pickup Point Selection */}
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '4px', fontWeight: 600 }}>Pickup Point</label>
-                            {busDetails?.pickupPoints && busDetails.pickupPoints.length > 0 ? (
-                                <select
-                                    value={selectedPickup}
-                                    onChange={(e) => setSelectedPickup(e.target.value)}
-                                    style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '100%' }}
+                            <div className={styles.seatLegend}>
+                                <div className={styles.legendItem}>
+                                    <span className={`${styles.seatSample} ${styles.available}`}></span>
+                                    <span>Available</span>
+                                </div>
+                                <div className={styles.legendItem}>
+                                    <span className={`${styles.seatSample} ${styles.selected}`}></span>
+                                    <span>Selected</span>
+                                </div>
+                                <div className={styles.legendItem}>
+                                    <span className={`${styles.seatSample} ${styles.booked}`}></span>
+                                    <span>Booked</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={styles.dialogFooter}>
+                            <div className={styles.selectedInfo}>
+                                {/* Pickup Point Selection */}
+                                <div style={{ marginBottom: '1rem' }}>
+                                    <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '4px', fontWeight: 600 }}>Pickup Point</label>
+                                    {busDetails?.pickupPoints && busDetails.pickupPoints.length > 0 ? (
+                                        <select
+                                            value={selectedPickup}
+                                            onChange={(e) => setSelectedPickup(e.target.value)}
+                                            style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '100%' }}
+                                        >
+                                            {busDetails.pickupPoints.map((point: string) => (
+                                                <option key={point} value={point}>{point}</option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <input
+                                            type="text"
+                                            value={selectedPickup}
+                                            onChange={(e) => setSelectedPickup(e.target.value)}
+                                            placeholder="Enter pickup location"
+                                            style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '100%' }}
+                                        />
+                                    )}
+                                </div>
+
+                                {selectedSeats.length > 0 ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                        <span>Selected: {selectedSeats.join(', ')}</span>
+                                        <span>Passenger: {session?.user?.name}</span>
+                                        <span style={{ fontWeight: 700, fontSize: '1.1em', color: 'var(--color-primary)' }}>
+                                            Total: NRs. {selectedSeats.length * ticketPrice}
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <span>No seats selected</span>
+                                )}
+                            </div>
+                            <div className={styles.dialogActions}>
+                                <button className={styles.btnCancel} onClick={onClose}>Cancel</button>
+                                <button
+                                    className={styles.btnConfirm}
+                                    onClick={handleProceedToPayment}
+                                    disabled={isBooking || selectedSeats.length === 0}
+                                    style={{ opacity: isBooking || selectedSeats.length === 0 ? 0.7 : 1 }}
                                 >
-                                    {busDetails.pickupPoints.map((point: string) => (
-                                        <option key={point} value={point}>{point}</option>
-                                    ))}
-                                </select>
-                            ) : (
-                                <input
-                                    type="text"
-                                    value={selectedPickup}
-                                    onChange={(e) => setSelectedPickup(e.target.value)}
-                                    placeholder="Enter pickup location"
-                                    style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '100%' }}
-                                />
-                            )}
+                                    Proceed to Payment
+                                </button>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <div className={styles.paymentContainer}>
+                        <div className={styles.paymentHeader}>
+                            <h4>Choose Payment Method</h4>
+                            <p>Total Amount: NRs. {selectedSeats.length * ticketPrice}</p>
                         </div>
 
-                        {selectedSeats.length > 0 ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                <span>Selected: {selectedSeats.join(', ')}</span>
-                                <span>Passenger: {session?.user?.name}</span>
-                                <span style={{ fontWeight: 700, fontSize: '1.1em', color: 'var(--color-primary)' }}>
-                                    Total: NRs. {selectedSeats.length * ticketPrice}
-                                </span>
-                            </div>
-                        ) : (
-                            <span>No seats selected</span>
-                        )}
-                    </div>
-                    <div className={styles.dialogActions}>
-                        <button className={styles.btnCancel} onClick={onClose}>Cancel</button>
-                        <button
-                            className={styles.btnConfirm}
-                            onClick={handleConfirmBooking}
-                            disabled={isBooking || selectedSeats.length === 0}
-                            style={{ opacity: isBooking || selectedSeats.length === 0 ? 0.7 : 1 }}
-                        >
-                            {isBooking ? 'Booking...' : 'Confirm Booking'}
+                        <div className={styles.paymentGrid}>
+                            <button
+                                className={`${styles.paymentBtn} ${styles.khaltiBtn}`}
+                                onClick={() => handleConfirmBooking('Khalti')}
+                                disabled={isBooking}
+                            >
+                                <i className="fa-solid fa-wallet"></i> Pay with Khalti
+                            </button>
+                            <button
+                                className={`${styles.paymentBtn} ${styles.esewaBtn}`}
+                                onClick={() => handleConfirmBooking('eSewa')}
+                                disabled={isBooking}
+                            >
+                                <i className="fa-solid fa-wallet"></i> Pay with eSewa
+                            </button>
+                            <button
+                                className={`${styles.paymentBtn} ${styles.mobankingBtn}`}
+                                onClick={() => handleConfirmBooking('MoBanking')}
+                                disabled={isBooking}
+                            >
+                                <i className="fa-solid fa-building-columns"></i> Mobile Banking
+                            </button>
+                        </div>
+
+                        <button className={styles.backToSeatsBtn} onClick={() => setViewState('SEAT')}>
+                            <i className="fa-solid fa-arrow-left"></i> Back to Seat Selection
                         </button>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

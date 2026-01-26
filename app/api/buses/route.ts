@@ -11,6 +11,7 @@ export async function GET(req: Request) {
         const { searchParams } = new URL(req.url);
         const origin = searchParams.get('origin');
         const destination = searchParams.get('destination');
+        const date = searchParams.get('date');
         const providerId = searchParams.get('providerId');
 
         await dbConnect();
@@ -18,6 +19,7 @@ export async function GET(req: Request) {
         let query: any = {};
         if (origin) query['route.origin'] = origin;
         if (destination) query['route.destination'] = destination;
+        if (date) query['date'] = date;
         if (providerId) query['provider'] = providerId;
 
         const buses = await Bus.find(query).populate('provider', 'name providerName');
@@ -42,7 +44,7 @@ export async function POST(req: Request) {
         console.log("Create Bus Body:", body);
 
         // Basic validation
-        if (!body.name || !body.plateNumber || !body.price) {
+        if (!body.name || !body.plateNumber || !body.price || !body.date) {
             return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
         }
 
@@ -55,6 +57,7 @@ export async function POST(req: Request) {
             plateNumber: body.plateNumber,
             type: body.type,
             price: Number(body.price),
+            date: body.date,
             pickupPoints: body.pickupPoints || [],
             route: {
                 origin: body.origin,

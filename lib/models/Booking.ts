@@ -36,6 +36,11 @@ const BookingSchema = new mongoose.Schema({
         enum: ['confirmed', 'cancelled'],
         default: 'confirmed',
     },
+    paymentMethod: {
+        type: String,
+        required: true,
+        enum: ['Khalti', 'eSewa', 'MoBanking'],
+    },
 }, { timestamps: true });
 
 export default mongoose.models.Booking || mongoose.model('Booking', BookingSchema);

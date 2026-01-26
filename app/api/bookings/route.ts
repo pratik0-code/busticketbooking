@@ -12,9 +12,9 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
 
-        const { busId, seats, totalPrice, passengerDetails, pickupPoint } = await req.json();
+        const { busId, seats, totalPrice, passengerDetails, pickupPoint, paymentMethod } = await req.json();
 
-        if (!busId || !seats || !seats.length || !totalPrice || !passengerDetails || !pickupPoint) {
+        if (!busId || !seats || !seats.length || !totalPrice || !passengerDetails || !pickupPoint || !paymentMethod) {
             return NextResponse.json({ message: 'Missing booking details' }, { status: 400 });
         }
 
@@ -30,6 +30,7 @@ export async function POST(req: Request) {
             totalPrice,
             pickupPoint,
             passengerDetails,
+            paymentMethod,
             status: 'confirmed'
         });
 
@@ -88,5 +89,40 @@ export async function GET(req: Request) {
     } catch (error: any) {
         console.error('Fetch Bookings Error:', error);
         return NextResponse.json({ message: 'Failed to fetch bookings' }, { status: 500 });
+    }
+}
+
+export async function DELETE(req: Request) {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+        }
+
+        const { searchParams } = new URL(req.url);
+        const id = searchParams.get('id');
+
+        if (!id) {
+            return NextResponse.json({ message: 'Booking ID required' }, { status: 400 });
+        }
+
+        await dbConnect();
+        const booking = await Booking.findOne({ _id: id });
+
+        if (!booking) {
+            return NextResponse.json({ message: 'Booking not found' }, { status: 404 });
+        }
+
+        // Ensure user owns the booking or is admin
+        if (booking.user.toString() !== session.user.id && session.user.role !== 'admin') {
+            return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
+        }
+
+        await Booking.findByIdAndDelete(id);
+
+        return NextResponse.json({ message: 'Booking deleted successfully' });
+    } catch (error: any) {
+        console.error('Delete Booking Error:', error);
+        return NextResponse.json({ message: error.message }, { status: 500 });
     }
 }
